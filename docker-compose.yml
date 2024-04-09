@@ -13,11 +13,12 @@ services:
       - php
   php:
     build: 
-      context: ./docker/dev/php
+      dockerfile: ./docker/dev/php/Dockerfile
     networks:
       - internal
     volumes:
       - .:/var/www/html/
+      - /var/www/html/vendor
 
 networks:
   internal:
