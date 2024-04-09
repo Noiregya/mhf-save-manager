@@ -183,19 +183,21 @@ class SaveDataController extends AbstractController
         $br->setPosition(0x23E74);
     
         $items = ['items' => [], 'ammo' => []];
-        for ($i = 0; $i <= 20 ; $i++) {
+        for ($i = 0; $i < 20 ; $i++) {
             $item = new Item($br->readBytes(8));
             if ($item->getId() === "0000") {
                 continue;
             }
+            $item->setSlot($i);
             $items['items'][] = $item;
         }
     
-        for ($i = 0; $i <= 10 ; $i++) {
+        for ($i = 0; $i < 10 ; $i++) {
             $item = new Item($br->readBytes(8));
             if ($item->getId() === "0000") {
                 continue;
             }
+            $item->setSlot($i);
             $items['ammo'][] = $item;
         }
         
