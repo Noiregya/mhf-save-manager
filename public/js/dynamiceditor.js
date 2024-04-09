@@ -1,53 +1,53 @@
 $(document).ready(function () {
     const table = $('#${itemName}table').DataTable();
 
-    $('#roadshopItemSelect').select2({
+    $('#shopItemSelect').select2({
         theme: 'bootstrap4',
     });
 
-    $('#roadshopCategorySelect').select2({
+    $('#shopCategorySelect').select2({
         theme: 'bootstrap4',
     });
-    $('#createRoadshopItem').click(function() {
-        $('#roadshopItemTitle > b')[0].innerHTML = '';
-        $('#roadshopItemSelect').val('0000');
-        $('#roadshopItemSelect').trigger('change');
-        $('#roadshopCategorySelect').val('0');
-        $('#roadshopCategorySelect').trigger('change');
-        $('#roadshopCost').val('');
-        $('#roadshopGRank').val('');
-        $('#roadshopTradeQuantity').val('');
-        $('#roadshopMaximumQuantity').val('');
-        $('#roadshopRoadFloors').val('');
-        $('#roadshopFatalis').val('');
-        $('#roadshopItemModal').modal('show');
+    $('#createShopItem').click(function() {
+        $('#shopItemTitle > b')[0].innerHTML = '';
+        $('#shopItemSelect').val('0000');
+        $('#shopItemSelect').trigger('change');
+        $('#shopCategorySelect').val('0');
+        $('#shopCategorySelect').trigger('change');
+        $('#shopCost').val('');
+        $('#shopGRank').val('');
+        $('#shopTradeQuantity').val('');
+        $('#shopMaximumQuantity').val('');
+        $('#shopRoadFloors').val('');
+        $('#shopFatalis').val('');
+        $('#shopItemModal').modal('show');
     });
 
-    $('#roadshoptable').on('click', '.editRoadItem', function () {
-        $('#roadshopItemTitle > b')[0].innerHTML = $(this).data('id');
-        $('#roadshopItemSelect').val($(this).data('itemid'));
-        $('#roadshopItemSelect').trigger('change');
-        $('#roadshopCategorySelect').val($(this).data('categoryid'));
-        $('#roadshopCategorySelect').trigger('change');
-        $('#roadshopCost').val($(this).data('cost'));
-        $('#roadshopGRank').val($(this).data('grank'));
-        $('#roadshopTradeQuantity').val($(this).data('quantity'));
-        $('#roadshopMaximumQuantity').val($(this).data('max_quantity'));
-        $('#roadshopRoadFloors').val($(this).data('roadfloors'));
-        $('#roadshopFatalis').val($(this).data('fatalis'));
-        $('#roadshopItemModal').modal('show');
+    $('#shoptable').on('click', '.editItem', function () {
+        $('#shopItemTitle > b')[0].innerHTML = $(this).data('id');
+        $('#shopItemSelect').val($(this).data('itemid'));
+        $('#shopItemSelect').trigger('change');
+        $('#shopCategorySelect').val($(this).data('categoryid'));
+        $('#shopCategorySelect').trigger('change');
+        $('#shopCost').val($(this).data('cost'));
+        $('#shopGRank').val($(this).data('grank'));
+        $('#shopTradeQuantity').val($(this).data('quantity'));
+        $('#shopMaximumQuantity').val($(this).data('max_quantity'));
+        $('#shopRoadFloors').val($(this).data('roadfloors'));
+        $('#shopFatalis').val($(this).data('fatalis'));
+        $('#shopItemModal').modal('show');
     });
 
-    $('#roadshopSave').click(function() {
-        let id = $('#roadshopItemTitle > b')[0].innerHTML;
-        let item = $('#roadshopItemSelect').find(':selected');
-        let category = $('#roadshopCategorySelect').find(':selected');
-        let cost = $('#roadshopCost').val();
-        let grank = $('#roadshopGRank').val();
-        let tradeQuantity = $('#roadshopTradeQuantity').val();
-        let maximumQuantity = $('#roadshopMaximumQuantity').val();
-        let roadFloors = $('#roadshopRoadFloors').val();
-        let fatalis = $('#roadshopFatalis').val();
+    $('#shopSave').click(function() {
+        let id = $('#shopItemTitle > b')[0].innerHTML;
+        let item = $('#shopItemSelect').find(':selected');
+        let category = $('#shopCategorySelect').find(':selected');
+        let cost = $('#shopCost').val();
+        let grank = $('#shopGRank').val();
+        let tradeQuantity = $('#shopTradeQuantity').val();
+        let maximumQuantity = $('#shopMaximumQuantity').val();
+        let roadFloors = $('#shopRoadFloors').val();
+        let fatalis = $('#shopFatalis').val();
 
         let saveButton = $(this);
         saveButton.prop('disabled', true);
@@ -74,11 +74,11 @@ $(document).ready(function () {
         };
 
         $.ajax({
-            url: '/servertools/roadshop/save',
+            url: '/servertools/shop/save',
             type: 'POST',
             data: data,
         }).then(function(response) {
-            let button = $('.editRoadItem[data-id="' + id + '"]');
+            let button = $('.editItem[data-id="' + id + '"]');
             if (button.length > 0) {
                 let cells = button.parents('tr').children('td');
                 cells[1].innerHTML = category.text();
@@ -96,14 +96,14 @@ $(document).ready(function () {
                 //table.row.add(['ID VOM RESPOONSE', category.text(), shop.text(), cost, grank, tradeQuantity, maximumQuantity, boughtQuantity, roadFloors, fatalis]).draw();
             }
 
-            $('#roadshopItemModal').modal('hide');
+            $('#shopItemModal').modal('hide');
         }).catch(function(response) {
             alert(response.message);
             saveButton.prop('disabled', false);
         });
     });
 
-    $('#roadshoptable').on('click', '.deleteRoadItem', function () {
+    $('#shoptable').on('click', '.deleteItem', function () {
         let formdata = new FormData();
         let itemId = $(this).attr('data-id');
         formdata.append('item', itemId);
@@ -115,7 +115,7 @@ $(document).ready(function () {
         let rowToRemove = $(this).parents('tr');
 
         $.ajax({
-            url: '/servertools/roadshop/delete/' + itemId,
+            url: '/servertools/shop/delete/' + itemId,
             type: 'POST',
             data: formdata,
             processData: false,
@@ -129,25 +129,25 @@ $(document).ready(function () {
         });
     });
 
-    $('#importRoadShop').click(function() {
-        if (!window.confirm('This will overwrite every Roadshop Item. Beware!')) {
+    $('#importShop').click(function() {
+        if (!window.confirm('This will overwrite every Shop Item. Beware!')) {
             return;
         }
 
-        $('#importRoadShopInput').trigger('click');
+        $('#importShopInput').trigger('click');
     });
 
-    $('#importRoadShopInput').change(function() {
+    $('#importShopInput').change(function() {
         let formdata = new FormData();
         if($(this).prop('files').length <= 0) {
             return;
         }
 
         let file =$(this).prop('files')[0];
-        formdata.append('roadshopCSV', file);
+        formdata.append('shopCSV', file);
 
         $.ajax({
-            url: '/servertools/roadshop/import',
+            url: '/servertools/shop/import',
             type: 'POST',
             data: formdata,
             processData: false,

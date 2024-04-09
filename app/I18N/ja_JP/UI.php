@@ -3,7 +3,7 @@ return [
     //Index
     'Server Tools' => 'Server Tools',
     'Language' => '言語',
-    'Roadshop Editor' => 'Roadshop Editor',
+    'Shop Editor' => 'Shop Editor',
     'Distribution Editor' => 'Distribution Editor',
     'Gacha Editor' => 'Gacha Editor',
     'Event Quest Editor' => 'Event Quest Editor',
@@ -60,9 +60,9 @@ return [
     'Quantity' => '数量',
     'Close' => '終了',
     'Save' => '保存',
-    //Roadshop Editor
-    'Create Roadshop Item' => 'Create Roadshop Item',
-    'Editing Roadshop Item' => 'Editing Roadshop Item',
+    //Shop Editor
+    'Create Shop Item' => 'Create Shop Item',
+    'Editing Shop Item' => 'Editing Shop Item',
     'No Translation!' => 'No Translation!',
     'Export' => '書出',
     'Import' => '取込',

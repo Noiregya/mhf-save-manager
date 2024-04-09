@@ -14,9 +14,9 @@ use MHFSaveManager\Service\UIService;
 /**
  *
  */
-class RoadShopController extends AbstractController
+class ShopController extends AbstractController
 {
-    protected static string $itemName = 'roadshop';
+    protected static string $itemName = 'shop';
     protected static string $itemClass = ShopItem::class;
     /**
      * @return void
@@ -27,14 +27,18 @@ class RoadShopController extends AbstractController
         
         $data = [];
         
-        $roadItems = EM::getInstance()->getRepository(self::$itemClass)->matching(
-            Criteria::create()->where(Criteria::expr()->eq('shop_type', '10'))
+        $shopItems = EM::getInstance()->getRepository(self::$itemClass)->matching(
+            Criteria::create()->where(Criteria::expr()->gt('shop_type', '0'))
         )->toArray();
         
         $modalFieldInfo = [
             $UILocale['ID']                   => [
                 'type'     => 'Hidden',
                 'disabled' => true,
+            ],
+            $UILocale['Shop Type']             => [
+                'type'    => 'Array',
+                'options' => ShopItem::$shoptypes,
             ],
             $UILocale['Category']             => [
                 'type'    => 'Array',
@@ -45,17 +49,18 @@ class RoadShopController extends AbstractController
                 'options' => ItemsService::getForLocale(),
             ],
             $UILocale['Cost']                 => ['type' => 'Int', 'min' => 1, 'max' => 999, 'placeholder' => '1-999'],
-            $UILocale['GRank Req']            => ['type' => 'Int', 'min' => 1, 'max' => 999, 'placeholder' => '1-999'],
+            $UILocale['GRank Req']            => ['type' => 'Int', 'min' => 0, 'max' => 999, 'placeholder' => '0-999'],
             $UILocale['Trade Quantity']       => ['type' => 'Int', 'min' => 1, 'max' => 999, 'placeholder' => '1-999'],
-            $UILocale['Maximum Quantity']     => ['type' => 'Int', 'min' => 1, 'max' => 999, 'placeholder' => '1-999'],
-            $UILocale['Road Floors Req']      => ['type' => 'Int', 'min' => 1, 'max' => 999, 'placeholder' => '1-999'],
-            $UILocale['Weekly Fatalis Kills'] => ['type' => 'Int', 'min' => 1, 'max' => 999, 'placeholder' => '1-999'],
+            $UILocale['Maximum Quantity']     => ['type' => 'Int', 'min' => 0, 'max' => 999, 'placeholder' => '0-999'],
+            $UILocale['Road Floors Req']      => ['type' => 'Int', 'min' => 0, 'max' => 999, 'placeholder' => '0-999'],
+            $UILocale['Weekly Fatalis Kills'] => ['type' => 'Int', 'min' => 0, 'max' => 999, 'placeholder' => '0-999'],
         ];
     
         $fieldPositions = [
             'headline' => $UILocale['ID'],
             [
                 
+                $UILocale['Shop Type'],
                 $UILocale['Category'],
                 $UILocale['Item'],
             ],
@@ -69,34 +74,41 @@ class RoadShopController extends AbstractController
             ],
         ];
         
-        foreach ($roadItems as $roadItem) {
-            $itemId = self::numberConvertEndian($roadItem->getItemid(), 2);
+        foreach ($shopItems as $shopItem) {
+            $itemId = self::numberConvertEndian($shopItem->getItemid(), 2);
             $itemData = ItemsService::getForLocale()[$itemId];
             $data[] = [
-                $UILocale['ID']                   => $roadItem->getId(),
+                $UILocale['ID']                   => $shopItem->getId(),
+
+                $UILocale['Shop Type']             =>
+                [
+                    'id'   => $shopItem->getShoptype(),
+                    'name' => $shopItem->getShoptypeFancy(),
+                ],            
+
                 $UILocale['Category']             =>
                     [
-                        'id'   => $roadItem->getShopid(),
-                        'name' => $roadItem->getShopidFancy(),
+                        'id'   => $shopItem->getShopid(),
+                        'name' => $shopItem->getShopidFancy(),
                     ],
                 $UILocale['Item']                 =>
                     [
                         'id'   => $itemId,
                         'name' => $itemData['name'] ? : $UILocale['No Translation!'],
                     ],
-                $UILocale['Cost']                 => $roadItem->getCost(),
-                $UILocale['GRank Req']            => $roadItem->getMinGr(),
-                $UILocale['Trade Quantity']       => $roadItem->getQuantity(),
-                $UILocale['Maximum Quantity']     => $roadItem->getMaxQuantity(),
-                $UILocale['Road Floors Req']      => $roadItem->getRoadFloors(),
-                $UILocale['Weekly Fatalis Kills'] => $roadItem->getRoadFatalis(),
+                $UILocale['Cost']                 => $shopItem->getCost(),
+                $UILocale['GRank Req']            => $shopItem->getMinGr(),
+                $UILocale['Trade Quantity']       => $shopItem->getQuantity(),
+                $UILocale['Maximum Quantity']     => $shopItem->getMaxQuantity(),
+                $UILocale['Road Floors Req']      => $shopItem->getRoadFloors(),
+                $UILocale['Weekly Fatalis Kills'] => $shopItem->getRoadFatalis(),
             ];
         }
         
         $actions = [
         ];
         
-        echo EditorGeneratorService::generateDynamicTable('MHF Road Shop', static::$itemName, $modalFieldInfo, $fieldPositions, $data, $actions);
+        echo EditorGeneratorService::generateDynamicTable('MHF Shop', static::$itemName, $modalFieldInfo, $fieldPositions, $data, $actions);
     }
     
     
@@ -106,7 +118,7 @@ class RoadShopController extends AbstractController
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public static function EditRoadShopItem(): void
+    public static function EditShopItem(): void
     {
         self::SaveItem(static function ($item) {
             $item->setItemid(hexdec(self::numberConvertEndian(hexdec($_POST[self::localeWS('Item')]), 2)));
@@ -118,7 +130,7 @@ class RoadShopController extends AbstractController
             $item->setRoadFloors($_POST[self::localeWS('Road Floors Req')]);
             $item->setRoadFatalis($_POST[self::localeWS('Weekly Fatalis Kills')]);
     
-            $item->setShoptype(10);
+            $item->setShoptype($_POST[self::localeWS('Shop Type')]);
             $item->setMinHr(0);
             $item->setMinSr(0);
             $item->setStoreLevel(1);
@@ -128,7 +140,7 @@ class RoadShopController extends AbstractController
     /**
      * @return void
      */
-    public static function ExportRoadShopItems(): void
+    public static function ExportShopItems(): void
     {
         
         $records = EM::getInstance()->getRepository(self::$itemClass)->matching(
@@ -142,7 +154,7 @@ class RoadShopController extends AbstractController
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public static function ImportRoadShopItems(): void
+    public static function ImportShopItems(): void
     {
         self::importFromCSV('n.shop_type = 10');
     }

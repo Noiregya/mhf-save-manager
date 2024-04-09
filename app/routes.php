@@ -5,7 +5,7 @@ use MHFSaveManager\Controller\DistributionsController;
 use MHFSaveManager\Controller\EventQuestController;
 use MHFSaveManager\Controller\GachaStoreController;
 use MHFSaveManager\Controller\SaveDataController;
-use MHFSaveManager\Controller\RoadShopController;
+use MHFSaveManager\Controller\ShopController;
 use MHFSaveManager\Database\EM;
 use MHFSaveManager\Model\Character;
 use MHFSaveManager\Model\Distribution;
@@ -121,16 +121,17 @@ SimpleRouter::post('/servertools/eventquest/import', function() {
     EventQuestController::ImportEventQuests();
 });
 
-SimpleRouter::get('/servertools/roadshop', function() {
-    RoadShopController::Index();
+SimpleRouter::get('/servertools/shop', function() {
+    ShopController::Index();
 });
 
-SimpleRouter::post('/servertools/roadshop/save', function() {
+SimpleRouter::post('/servertools/shop/save', function() {
     /*
      *
      */
     $needed = [
         'Item',
+        'Shop Type',
         'Category',
         'Cost',
         'GRank Req',
@@ -141,27 +142,27 @@ SimpleRouter::post('/servertools/roadshop/save', function() {
     ];
     
     foreach ($needed as $need) {
-        if (!isset($_POST[RoadShopController::localeWS($need)])) {
+        if (!isset($_POST[ShopController::localeWS($need)])) {
             ResponseService::SendUnprocessableEntity();
         }
     }
     
-    RoadShopController::EditRoadShopItem();
+    ShopController::EditshopItem();
 });
 
-SimpleRouter::get('/servertools/roadshop/export', function() {
-    RoadShopController::ExportRoadShopItems();
+SimpleRouter::get('/servertools/shop/export', function() {
+    ShopController::ExportshopItems();
 });
 
-SimpleRouter::post('/servertools/roadshop/import', function() {
-    if ($_FILES["roadshopCSV"]["error"] != UPLOAD_ERR_OK) {
+SimpleRouter::post('/servertools/shop/import', function() {
+    if ($_FILES["shopCSV"]["error"] != UPLOAD_ERR_OK) {
         ResponseService::SendServerError('Error while uploading, check storage permissions for the TMP folder!');
     }
     
-    RoadShopController::ImportRoadShopItems();
+    ShopController::ImportshopItems();
 });
 
-SimpleRouter::post('/servertools/roadshop/delete/{id}', function($id) {
+SimpleRouter::post('/servertools/shop/delete/{id}', function($id) {
     /** @var ShopItem $item */
     $item = EM::getInstance()->getRepository('MHFSaveManager\Model\ShopItem')->find($id);
     if (!$item) {

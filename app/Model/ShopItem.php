@@ -104,6 +104,20 @@ class ShopItem
         'Super Special',
     ];
     
+    public static array $shoptypes = [
+        'Unimplemented',
+        'Running Gachas',
+        'Actual Gacha',
+        'Hunting Festival Exchange',
+        'N points 0-6',
+        'GCP to item, 0-6',
+        'Gacha Coin Shop',
+        'Item to GCP',
+        'Diva',
+        'Diva Song Shop',
+        'Road Shop',
+    ];
+    
     /**
      * @return int
      */
@@ -150,6 +164,15 @@ class ShopItem
         return $this->shop_id;
     }
     
+
+    /**
+     * @return string
+     */
+    public function getShoptypeFancy(): string
+    {
+        return self::$shoptypes[$this->shop_type];
+    }
+
     /**
      * @return string
      */
