@@ -12,10 +12,10 @@
             <?php include VIEWS_DIR . 'edit' . DIRECTORY_SEPARATOR . 'edit-itembox-nav.php';?>
         </div>
         <div class="tab-pane fade" id="nav-pouch" role="tabpanel" aria-labelledby="nav-pouch-tab">
-            ...<?php //include VIEWS_DIR . 'edit' . DIRECTORY_SEPARATOR . 'edit-pouch-page.php';?>
+            <?php include VIEWS_DIR . 'edit' . DIRECTORY_SEPARATOR . 'edit-pouch-page.php';?>
         </div>
         <div class="tab-pane fade" id="nav-ammopouch" role="tabpanel" aria-labelledby="nav-ammopouch-tab">
-            ...<?php //include VIEWS_DIR . 'edit' . DIRECTORY_SEPARATOR . 'edit-ammopouch-page.php';?>
+            <?php include VIEWS_DIR . 'edit' . DIRECTORY_SEPARATOR . 'edit-ammopouch-page.php';?>
         </div>
         <div class="tab-pane fade" id="nav-warehouse" role="tabpanel" aria-labelledby="nav-warehouse-tab">...</div>
     </div>

@@ -32,19 +32,7 @@ A simple Webapplication created to manage Character savedata user by the MHF Ser
 docker-compose up -d
 ```
 
-3. To install the dependencies just access the PHP container
-
-```sh
-docker-compose exec php bash
-```
-
-4. Run `composer install` inside the container
-
-```sh
-composer install
-```
-
-5. Open <http://localhost:8080> with your browser to see the app.
+3. Open <http://localhost:8080> with your browser to see the app.
 
 > Warning: if the backup functions don't work, it could be a permissions error. In Linux, use `sudo chmod 777 -R storage`
 
@@ -71,7 +59,7 @@ To add a new language
 ![Sample Image from Backup-GUI](https://i.imgur.com/SfAQC2f.png)
 ![Sample Image from Edit-GUI](https://i.imgur.com/Nn1ZJCV.png)
 ![Sample Image from Edit-Itembox-GUI](https://i.imgur.com/6xR7JGH.png)
-![Sample Image from Roadshop-GUI](https://i.imgur.com/w1QzjT4.png)
+![Sample Image from Shop-GUI](https://i.imgur.com/w1QzjT4.png)
 ![Sample Image from Distribution-GUI](https://i.imgur.com/OwToDZd.png)
 
 For now you can:
@@ -81,7 +69,7 @@ For now you can:
 - Check character stats like gear and items
 - Edit Itembox, currency and points (z / Gz / Restyle Points)
 - Edit your Keyquest Flag (Needed for rebalance patch)
-- Manage your Roadshop!
+- Manage your Shop!
 - Manage your Distributions! (Guide Gal)
 
 Todo:
