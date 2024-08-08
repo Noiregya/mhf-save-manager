@@ -1,10 +1,11 @@
 <html lang="en">
 <head>
-    <?php use MHFSaveManager\Model\Distribution;
-    use MHFSaveManager\Model\DistributionItem;
+    <?php use MHFSaveManager\Database\EM;
+    use MHFSaveManager\Model\Distribution;
+    use MHFSaveManager\Model\DistributionItems;
     use MHFSaveManager\Service\ItemsService;
     use MHFSaveManager\Service\EquipService;
-
+    
     include_once "head.php"?>
     <link rel="stylesheet" href="/css/char-edit.css">
     <title>MHF Character Manager</title>
@@ -103,32 +104,32 @@
                         <h6><?php echo $UILocale['Rank Limitations']?>, 65535 = <?php echo $UILocale['No Limit']?>:</h6>
                         <h6><?php echo $UILocale['Min HR']?>:</h6>
                         <div class="input-group mb-2">
-                            <input type="number" class="form-control" id="distributionMinHR" min="0" max="65535" placeholder="65535">
+                            <input type="number" class="form-control" id="distributionMinHR" min="0" max="65535">
                         </div>
         
                         <h6><?php echo $UILocale['Max HR']?>:</h6>
                         <div class="input-group mb-2">
-                            <input type="number" class="form-control" id="distributionMaxHR" min="0" max="65535" placeholder="65535">
+                            <input type="number" class="form-control" id="distributionMaxHR" min="0" max="65535">
                         </div>
         
                         <h6><?php echo $UILocale['Min SR']?>:</h6>
                         <div class="input-group mb-2">
-                            <input type="number" class="form-control" id="distributionMinSR" min="0" max="65535" placeholder="65535">
+                            <input type="number" class="form-control" id="distributionMinSR" min="0" max="65535">
                         </div>
         
                         <h6><?php echo $UILocale['Max SR']?>:</h6>
                         <div class="input-group mb-2">
-                            <input type="number" class="form-control" id="distributionMaxSR" min="0" max="65535" placeholder="65535">
+                            <input type="number" class="form-control" id="distributionMaxSR" min="0" max="65535">
                         </div>
         
                         <h6><?php echo $UILocale['Min GR']?>:</h6>
                         <div class="input-group mb-2">
-                            <input type="number" class="form-control" id="distributionMinGR" min="0" max="65535" placeholder="65535">
+                            <input type="number" class="form-control" id="distributionMinGR" min="0" max="65535">
                         </div>
         
                         <h6><?php echo $UILocale['Max GR']?>:</h6>
                         <div class="input-group mb-2">
-                            <input type="number" class="form-control" id="distributionMaxGR" min="0" max="65535" placeholder="65535">
+                            <input type="number" class="form-control" id="distributionMaxGR" min="0" max="65535">
                         </div>
                     </div>
                 </div>
@@ -154,7 +155,7 @@
                 <div class="input-group mb-2">
                     <select class="form-control" id="distributionItemTypeSelect">
                         <?php
-                            foreach (DistributionItem::$types as $id => $type) {
+                            foreach (DistributionItems::$types as $id => $type) {
                                 printf('<option value="%s">%s</option>', $id, $type);
                             }
                         ?>
@@ -268,10 +269,10 @@
             $distribution->getMinGr(),
             $distribution->getMaxGr(),
             Distribution::$types[$distribution->getType()],
-            $distribution->getMinHr() != 65535 ? $distribution->getMinHr() : '-',
-            $distribution->getMaxHr() != 65535 ? $distribution->getMaxHr() : '-',
-            $distribution->getMinGr() != 65535 ? $distribution->getMinGr() : '-',
-            $distribution->getMaxGr() != 65535 ? $distribution->getMaxGr() : '-',
+            $distribution->getMinHr() != null ? $distribution->getMinHr() : '-',
+            $distribution->getMaxHr() != null ? $distribution->getMaxHr() : '-',
+            $distribution->getMinGr() != null ? $distribution->getMinGr() : '-',
+            $distribution->getMaxGr() != null ? $distribution->getMaxGr() : '-',
             $distribution->getEventNameColor(),
             $distribution->getDescriptionColor()
             );
@@ -289,19 +290,15 @@
     let DistributionItems = {
         <?php
             foreach ($distributions as $distribution) {
-                $data = $distribution->getData();
-                $numberOfItems = hexdec(bin2hex(fread($data, 2)));
-                
-                if ($numberOfItems <= 0) {
-                    continue;
-                }
-                
+                $items = EM::getInstance()->getRepository(DistributionItems::class)->findBy(array('distribution_id' => $distribution->getId()));
                 printf('%s: {', $distribution->getId());
                 try {
-                for ($i = 0; $i < $numberOfItems; $i++) {
-                    $item = new DistributionItem(bin2hex(fread($data, 13)));
-                    printf('%s: {type: "%s", itemId: "%s", amount: "%s"},', $i, $item->getType(), $item->getItemId(), $item->getAmount());
-                }
+                    foreach ($items as $i=>$item) {
+                        $itemIdString = $item->getItemIdString();
+                        $itemType = $item->getItemType();
+                        printf('%s: {type: "%s", itemId: "%s", amount: "%s"},',
+                            $i+1, $itemType, $itemIdString, $item->getQuantity());
+                    }
                 } catch (\Exception $e) {
                     continue;
                 }
@@ -327,4 +324,4 @@
         });
     });
 </script>
-<script src="/js/distribution.js"></script>
+<script type="text/javascript" src="/js/distribution.js"></script>

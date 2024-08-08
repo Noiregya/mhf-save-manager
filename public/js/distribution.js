@@ -116,12 +116,12 @@ $(document).ready(function () {
         $('#distributionNameColor').val(null);
         $('#distributionDescColor').val(null);
         $('#distributionDeadline').val(null);
-        $('#distributionMinHR').val(65535);
-        $('#distributionMaxHR').val(65535);
-        $('#distributionMinSR').val(65535);
-        $('#distributionMaxSR').val(65535);
-        $('#distributionMinGR').val(65535);
-        $('#distributionMaxGR').val(65535);
+        $('#distributionMinHR').val(null);
+        $('#distributionMaxHR').val(null);
+        $('#distributionMinSR').val(null);
+        $('#distributionMaxSR').val(null);
+        $('#distributionMinGR').val(null);
+        $('#distributionMaxGR').val(null);
         $('#distributionItemsSelect').empty();
         $('#distributionModal').modal('show');
 
@@ -245,7 +245,7 @@ $(document).ready(function () {
 
         let saveButton = $(this);
         saveButton.prop('disabled', true);
-        if (minhr === "" || maxhr === "" || minsr === "" || maxsr === "" || mingr === "" || maxgr === "" || characterId === "" || name === "" || desc === "" || timesacceptable === "" || $('#distributionNameColor').val() === null || $('#distributionNameColor').val() === null) {
+        if (characterId === "" || name === "" || desc === "" || timesacceptable === "" || $('#distributionNameColor').val() === null || $('#distributionNameColor').val() === null) {
             alert("Please fill all fields with valid data!");
             saveButton.prop('disabled', false);
             return;

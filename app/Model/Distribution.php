@@ -56,37 +56,37 @@ class Distribution
     protected $times_acceptable;
     
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @var int
      */
     protected $min_hr;
     
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @var int
      */
     protected $max_hr;
     
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @var int
      */
     protected $min_sr;
     
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @var int
      */
     protected $max_sr;
     
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true))
      * @var int
      */
     protected $min_gr;
     
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true))
      * @var int
      */
     protected $max_gr;
@@ -279,7 +279,7 @@ class Distribution
     /**
      * @return int
      */
-    public function getMinHr(): int
+    public function getMinHr(): int|null
     {
         return $this->min_hr;
     }
@@ -298,7 +298,7 @@ class Distribution
     /**
      * @return int
      */
-    public function getMaxHr(): int
+    public function getMaxHr(): int|null
     {
         return $this->max_hr;
     }
@@ -317,7 +317,7 @@ class Distribution
     /**
      * @return int
      */
-    public function getMinSr(): int
+    public function getMinSr(): int|null
     {
         return $this->min_sr;
     }
@@ -336,7 +336,7 @@ class Distribution
     /**
      * @return int
      */
-    public function getMaxSr(): int
+    public function getMaxSr(): int|null
     {
         return $this->max_sr;
     }
@@ -355,7 +355,7 @@ class Distribution
     /**
      * @return int
      */
-    public function getMinGr(): int
+    public function getMinGr(): int|null
     {
         return $this->min_gr;
     }
@@ -374,7 +374,7 @@ class Distribution
     /**
      * @return int
      */
-    public function getMaxGr(): int
+    public function getMaxGr(): int|null
     {
         return $this->max_gr;
     }

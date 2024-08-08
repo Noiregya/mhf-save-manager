@@ -7,7 +7,7 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use MHFSaveManager\Database\EM;
 use MHFSaveManager\Model\Distribution;
-use MHFSaveManager\Model\DistributionItem;
+use MHFSaveManager\Model\DistributionItems;
 use MHFSaveManager\Service\ItemsService;
 use MHFSaveManager\Service\ResponseService;
 use MHFSaveManager\Model\Character;
@@ -19,6 +19,7 @@ class DistributionsController extends AbstractController
 {
     protected static string $itemName = 'distribution';
     protected static string $itemClass = Distribution::class;
+    protected static string $subItemClass = DistributionItems::class;
     
     public static function Index()
     {
@@ -40,16 +41,16 @@ class DistributionsController extends AbstractController
             printf('Desc: %s <br>', $distribution->getDescription());
             printf('Type: %s <br>', Distribution::$types[$distribution->getType()]);
             echo '<br><b>Items:</b><br>';
-            $data = $distribution->getData();
-            $numberOfItems = hexdec(bin2hex(fread($data, 2)));
-            
-            for ($i = 0; $i < $numberOfItems; $i++) {
-                $item = new DistributionItem(bin2hex(fread($data, 13)));
-                printf('Reencoded hex value: %s<br>', $item);
-                printf('ItemNr: %s <br>Type: %s <br>Item: %s <br>Amount: %s<br><br>', $i+1, DistributionItem::$types[$item->getType()], ItemsService::getForLocale()[$item->getItemId()]['name'], $item->getAmount());
-                
+            $items = EM::getInstance()->getRepository(DistributionItems::class)->findBy(array('distribution_id' => $distribution->getId()));
+            foreach ($items as $i=>$item) {
+                $itemIdString = $item->getItemIdString();
+                $itemName = array_key_exists($itemIdString, ItemsService::getForLocale()) 
+                    ? ItemsService::getForLocale()[$itemIdString]['name'] : "Corrupted item";
+                $itemType = array_key_exists($item->getItemType(), DistributionItems::$types) 
+                    ? DistributionItems::$types[$item->getItemType()] : "Unknown type";
+                printf('ItemNr: %s <br>Type: %s <br>Item: %s <br>Amount: %s<br><br>', 
+                    $i+1, $itemType, $itemName, $item->getQuantity());
             }
-            
         }
         echo "<hr>";
     }
@@ -77,20 +78,28 @@ class DistributionsController extends AbstractController
         $distribution->setMinGr((int)$_POST['mingr']);
         $distribution->setMaxGr((int)$_POST['maxgr']);
         
-        $itemString = sprintf('%04X', count($_POST['items']));
-        
-        foreach ($_POST['items'] as $item) {
-            $itemString .= (new DistributionItem())->setType((int)$item['type'])->setAmount((int)$item['amount'])->setItemId($item['itemId']);
+        $items = array();
+        $toRemove = EM::getInstance()->getRepository(self::$subItemClass)->findBy(['distribution_id' => $distribution->getId()]);
+        foreach ($_POST['items'] as $postItem) {
+            $item = new DistributionItems();
+            if (isset($postItem['id']) && $postItem['id'] > 0) {
+                $item = EM::getInstance()->getRepository(self::$subItemClass)->find($postItem['id']);
+                unset($toRemove[$item->getId()]);
+            } else {
+                EM::getInstance()->persist($item);
+            }
+            $item->setItemType((int)$postItem['type']);
+            $item->setItemIdString($postItem['itemId']);
+            $item->setQuantity((int)$postItem['amount']);
+            $item->setDistributionId($distribution->getId());
+            array_push($items, $item);
         }
-        $handle = fopen('php://memory', 'rb+');
-        fwrite($handle, hex2bin($itemString));
-        rewind($handle);
-        $distribution->setData($handle);
-        
+        foreach ($toRemove as $item) {
+            EM::getInstance()->remove($item);
+        }
         EM::getInstance()->flush();
     
         ResponseService::SendOk();
-        
     }
     
     /**
