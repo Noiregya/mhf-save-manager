@@ -283,7 +283,7 @@
     <button id="createDistribution" class="btn btn-success"><?php echo $UILocale['Create Distribution']?></button>
     <a class="btn btn-primary" href="/servertools/distributions/export"><?php echo $UILocale['Export']?></a>
     <button id="importDistribution" class="btn btn-warning"><?php echo $UILocale['Import']?></button>
-    <input type="file" id="importDistributionInput" style="display: none" accept=".csv">
+    <input type="file" id="importDistributionInput" style="display: none" accept=".json">
 </div>
 
 <script>

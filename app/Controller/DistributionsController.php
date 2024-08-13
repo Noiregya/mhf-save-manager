@@ -19,7 +19,7 @@ class DistributionsController extends AbstractController
 {
     protected static string $itemName = 'distribution';
     protected static string $itemClass = Distribution::class;
-    protected static string $subItemClass = DistributionItems::class;
+    protected static array $subItemClasses = [DistributionItems::class];
     
     public static function Index()
     {
@@ -71,19 +71,19 @@ class DistributionsController extends AbstractController
         $distribution->setEventName($_POST['name']);
         $distribution->setDescription($_POST['desc']);
         $distribution->setDeadline($_POST['deadline'] ? new \DateTime($_POST['deadline']) : null);
-        $distribution->setMinHr((int)$_POST['minhr']);
-        $distribution->setMaxHr((int)$_POST['maxhr']);
-        $distribution->setMinSr((int)$_POST['minsr']);
-        $distribution->setMaxSr((int)$_POST['maxsr']);
-        $distribution->setMinGr((int)$_POST['mingr']);
-        $distribution->setMaxGr((int)$_POST['maxgr']);
+        $distribution->setMinHr($_POST['minhr'] === '' ? null: $_POST['minhr']);
+        $distribution->setMaxHr($_POST['maxhr'] === '' ? null: $_POST['maxhr']);
+        $distribution->setMinSr($_POST['minsr'] === '' ? null: $_POST['minsr']);
+        $distribution->setMaxSr($_POST['maxsr'] === '' ? null: $_POST['maxsr']);
+        $distribution->setMinGr($_POST['mingr'] === '' ? null: $_POST['mingr']);
+        $distribution->setMaxGr($_POST['maxgr'] === '' ? null: $_POST['maxgr']);
         
         $items = array();
-        $toRemove = EM::getInstance()->getRepository(self::$subItemClass)->findBy(['distribution_id' => $distribution->getId()]);
+        $toRemove = EM::getInstance()->getRepository(self::$subItemClasses[0])->findBy(['distribution_id' => $distribution->getId()]);
         foreach ($_POST['items'] as $postItem) {
             $item = new DistributionItems();
             if (isset($postItem['id']) && $postItem['id'] > 0) {
-                $item = EM::getInstance()->getRepository(self::$subItemClass)->find($postItem['id']);
+                $item = EM::getInstance()->getRepository(self::$subItemClasses[0])->find($postItem['id']);
                 unset($toRemove[$item->getId()]);
             } else {
                 EM::getInstance()->persist($item);
@@ -107,10 +107,14 @@ class DistributionsController extends AbstractController
      */
     public static function ExportDistributions(): void
     {
-        $records = EM::getInstance()->getRepository(self::$itemClass)->findAll();
-        self::arrayOfModelsToCSVDownload($records);
+        $records = [];
+        $records[self::$itemClass] = EM::getInstance()->getRepository(self::$itemClass)->findAll();
+        foreach (self::$subItemClasses as $subItemClass) {
+            $records[$subItemClass] = EM::getInstance()->getRepository($subItemClass)->findAll();
+        }
+        self::downloadJson(json_encode($records));
     }
-    
+
     /**
      * @return void
      * @throws ORMException
@@ -118,6 +122,6 @@ class DistributionsController extends AbstractController
      */
     public static function ImportDistributions(): void
     {
-        self::importFromCSV();
+        self::importFromJson(true);
     }
 }

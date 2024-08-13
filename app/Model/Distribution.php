@@ -1,15 +1,16 @@
 <?php
 
-
 namespace MHFSaveManager\Model;
 
+use JsonSerializable;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="distribution")
  */
-class Distribution
+class Distribution implements JsonSerializable, JsonDeserializable
 {
     /**
      * @ORM\Column(name="id", type="integer")
@@ -90,12 +91,6 @@ class Distribution
      * @var int
      */
     protected $max_gr;
-    
-    /**
-     * @ORM\Column(type="blob")
-     * @var resource
-     */
-    protected $data;
     
     /**
      * @return int
@@ -389,29 +384,51 @@ class Distribution
         
         return $this;
     }
-    
+
     /**
-     * @return resource
+     * Serialize into a json object
+     * @return array
      */
-    public function getData()
-    {
-        return $this->data;
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->id,
+            'character_id' => $this->character_id,
+            'type' => $this->type,
+            'deadline' => $this->deadline->getTimestamp(),
+            'event_name' => $this->event_name,
+            'description' => $this->description,
+            'times_acceptable' => $this->times_acceptable,
+            'min_hr' => $this->min_hr,
+            'max_hr' => $this->max_hr,
+            'min_sr' => $this->min_sr,
+            'max_sr' => $this->max_sr,
+            'min_gr' => $this->min_gr,
+            'max_gr' => $this->max_gr,
+        ];
     }
-    
+
     /**
-     * @param resource $data
+     * @param array $jsonObject
      * @return Distribution
      */
-    public function setData($data)
+    public function setFromJson(array $jsonObject) : Distribution
     {
-        if (!is_resource($data)) {
-            $handle = fopen('php://memory', 'br+');
-            fwrite($handle, hex2bin($data));
-            rewind($handle);
-            
-            $data = $handle;
-        }
-        $this->data = $data;
+        $this->id = $jsonObject['id'];
+        $this->character_id = $jsonObject['character_id'];
+        $this->type = $jsonObject['type'];
+        $this->event_name = $jsonObject['event_name'];
+        $this->description = $jsonObject['description'];
+        $this->times_acceptable = $jsonObject['times_acceptable'];
+        $this->min_hr = $jsonObject['min_hr'];
+        $this->max_hr = $jsonObject['max_hr'];
+        $this->min_sr = $jsonObject['min_sr'];
+        $this->max_sr = $jsonObject['max_sr'];
+        $this->min_gr = $jsonObject['min_gr'];
+        $this->max_gr = $jsonObject['max_gr'];
+
+        $dateData = new DateTime();
+        $dateData->setTimestamp($jsonObject['deadline']);
+        $this->deadline = $dateData;
         
         return $this;
     }

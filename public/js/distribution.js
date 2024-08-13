@@ -319,7 +319,7 @@ $(document).ready(function () {
         }
 
         let file =$(this).prop('files')[0];
-        formdata.append("distributionCSV", file);
+        formdata.append("distributionJSON", file);
 
         $.ajax({
             url: "/servertools/distributions/import",

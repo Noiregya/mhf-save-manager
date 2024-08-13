@@ -3,13 +3,14 @@
 
 namespace MHFSaveManager\Model;
 
+use JsonSerializable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="distribution_items")
  */
-class DistributionItems
+class DistributionItems implements JsonSerializable, JsonDeserializable
 {
     /**
      * @ORM\Column(name="id", type="integer")
@@ -195,6 +196,34 @@ class DistributionItems
     {
         $this->quantity = $quantity;
         
+        return $this;
+    }
+
+    /**
+     * Serialize into a json object
+     * @return array
+     */
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->id,
+            'distribution_id' => $this->distribution_id,
+            'item_type' => $this->item_type,
+            'item_id' => $this->item_id,
+            'quantity' => $this->quantity,
+        ];
+    }
+    
+    /**
+     * @param array $jsonObject
+     * @return DistributionItems
+     */
+    public function setFromJson(array $jsonObject) : DistributionItems
+    {
+        $this->id = $jsonObject['id'];
+        $this->distribution_id = $jsonObject['distribution_id'];
+        $this->item_type = $jsonObject['item_type'];
+        $this->item_id = $jsonObject['item_id'];
+        $this->quantity = $jsonObject['quantity'];
         return $this;
     }
 }
