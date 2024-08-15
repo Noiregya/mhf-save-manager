@@ -77,6 +77,9 @@ class DistributionsController extends AbstractController
         $distribution->setMaxSr($_POST['maxsr'] === '' ? null: $_POST['maxsr']);
         $distribution->setMinGr($_POST['mingr'] === '' ? null: $_POST['mingr']);
         $distribution->setMaxGr($_POST['maxgr'] === '' ? null: $_POST['maxgr']);
+
+        $distribution->setRights($_POST['rights']);
+        $distribution->setSelection($_POST['selection']);
         
         $items = array();
         $toRemove = EM::getInstance()->getRepository(self::$subItemClasses[0])->findBy(['distribution_id' => $distribution->getId()]);

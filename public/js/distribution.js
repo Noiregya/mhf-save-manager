@@ -1,3 +1,19 @@
+const courses = {
+    hli: 2,
+    ext: 3,
+    ass: 8,
+    hid: 10,
+    hsu: 11,
+    one: 26,
+    hlc: 27,
+    eca: 28,
+    net: 30
+};
+
+function getBit(number, bitPosition) {
+    return (number & (1 << bitPosition)) === 0 ? false : true;
+}
+
 $(document).ready(function () {
     let currentlyEditedItem = null;
     const table = $('#distributiontable').DataTable();
@@ -193,6 +209,19 @@ $(document).ready(function () {
         $('#distributionMaxSR').val($(this).data('maxsr'));
         $('#distributionMinGR').val($(this).data('mingr'));
         $('#distributionMaxGR').val($(this).data('maxgr'));
+        $('#distributionSelection').prop('checked', $(this).data('selection'));
+
+        let rights = $(this).data('rights');
+        $('#distributionHunterLife').prop('checked', getBit(rights, courses.hli));
+        $('#distributionExtra').prop('checked', getBit(rights, courses.ext));
+        $('#distributionAssist').prop('checked', getBit(rights, courses.ass));
+        $('#distributionHiden').prop('checked', getBit(rights, courses.hid));
+        $('#distributionHunterSupport').prop('checked', getBit(rights, courses.hsu));
+        $('#distributionNetcafe').prop('checked', getBit(rights, courses.net));
+        $('#distributionOfficialNetcate').prop('checked', getBit(rights, courses.one));
+        $('#distributionHunterLifeCard').prop('checked', getBit(rights, courses.hlc));
+        $('#distributionExtraCard').prop('checked', getBit(rights, courses.eca));
+
         $('#distributionNameColor').val($(this).data('namecolor'));
         $('#distributionDescColor').val($(this).data('desccolor'));
         $('#distributionItemsSelect').empty();
@@ -234,7 +263,17 @@ $(document).ready(function () {
         let maxsr = $('#distributionMaxSR').val();
         let mingr = $('#distributionMinGR').val();
         let maxgr = $('#distributionMaxGR').val();
+        let selection = $('#distributionSelection').is(':checked');
 
+        let rights = $('#distributionHunterLife').is(':checked') * (2 ** courses.hli)
+            + $('#distributionExtra').is(':checked') * (2 ** courses.ext)
+            + $('#distributionAssist').is(':checked') * (2 ** courses.ass)
+            + $('#distributionHiden').is(':checked') * (2 ** courses.hid)
+            + $('#distributionHunterSupport').is(':checked') * (2 ** courses.hsu)
+            + $('#distributionOfficialNetcate').is(':checked') * (2 ** courses.one)
+            + $('#distributionHunterLifeCard').is(':checked') * (2 ** courses.hlc)
+            + $('#distributionExtraCard').is(':checked') * (2 ** courses.eca)
+            + $('#distributionNetcafe').is(':checked') * (2 ** courses.net);
         let index = id ? id : Object.keys(DistributionItems).length
 
         DistributionItems[index] = {};
@@ -269,7 +308,9 @@ $(document).ready(function () {
             maxsr: maxsr,
             mingr: mingr,
             maxgr: maxgr,
-            items: DistributionItems[index]
+            items: DistributionItems[index],
+            rights: rights,
+            selection: selection,
         };
 
         $.ajax({

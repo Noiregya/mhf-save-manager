@@ -91,15 +91,19 @@ class Distribution implements JsonSerializable, JsonDeserializable
      * @var int
      */
     protected $max_gr;
-    
+
     /**
-     * @return int
+     * @ORM\Column(type="integer", nullable=true))
+     * @var int
      */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-    
+    protected $rights;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true))
+     * @var bool
+     */
+    protected $selection;
+        
     public static array $types = [
         0 => 'Bought',
         1 => 'Event',
@@ -110,6 +114,14 @@ class Distribution implements JsonSerializable, JsonDeserializable
         8 => 'Promo Item',
         9 => 'Subscription Item',
     ];
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
     
     /**
      * @param int $id
@@ -386,6 +398,44 @@ class Distribution implements JsonSerializable, JsonDeserializable
     }
 
     /**
+     * @return int
+     */
+    public function getRights(): int
+    {
+        return $this->rights | 0;
+    }
+    
+    /**
+     * @param int $rights
+     * @return Distribution
+     */
+    public function setRights($rights): Distribution
+    {
+        $this->rights = $rights;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getSelection(): bool
+    {
+        return $this->selection | false;
+    }
+    
+    /**
+     * @param int $selection
+     * @return Distribution
+     */
+    public function setSelection($selection): Distribution
+    {
+        $this->selection = $selection;
+
+        return $this;
+    }
+
+    /**
      * Serialize into a json object
      * @return array
      */
@@ -394,7 +444,7 @@ class Distribution implements JsonSerializable, JsonDeserializable
             'id' => $this->id,
             'character_id' => $this->character_id,
             'type' => $this->type,
-            'deadline' => $this->deadline->getTimestamp(),
+            'deadline' => $this->deadline ? $this->deadline->getTimestamp() : null,
             'event_name' => $this->event_name,
             'description' => $this->description,
             'times_acceptable' => $this->times_acceptable,
@@ -404,6 +454,8 @@ class Distribution implements JsonSerializable, JsonDeserializable
             'max_sr' => $this->max_sr,
             'min_gr' => $this->min_gr,
             'max_gr' => $this->max_gr,
+            'rights' => $this->rights,
+            'selection' => $this->selection,
         ];
     }
 
@@ -425,10 +477,14 @@ class Distribution implements JsonSerializable, JsonDeserializable
         $this->max_sr = $jsonObject['max_sr'];
         $this->min_gr = $jsonObject['min_gr'];
         $this->max_gr = $jsonObject['max_gr'];
+        $this->rights = $jsonObject['rights'];
+        $this->selection = $jsonObject['selection'];
 
-        $dateData = new DateTime();
-        $dateData->setTimestamp($jsonObject['deadline']);
-        $this->deadline = $dateData;
+        if($jsonObject['deadline']){
+            $dateData = new DateTime();
+            $dateData->setTimestamp($jsonObject['deadline']);
+            $this->deadline = $dateData;
+        }
         
         return $this;
     }
