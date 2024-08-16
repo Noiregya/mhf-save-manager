@@ -147,7 +147,7 @@
                         </div>
                         <div class="form-check form-check-inline">
                             <input type="checkbox" class="form-check-input" id="distributionAssist">
-                            <label class="form-check-label" for="distributionAssist"><?php echo $UILocale['Assit']?></label>
+                            <label class="form-check-label" for="distributionAssist"><?php echo $UILocale['Assist']?></label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input type="checkbox" class="form-check-input" id="distributionHiden">

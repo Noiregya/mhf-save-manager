@@ -104,7 +104,7 @@ return [
         'Requires one course in' => 'Requires one course in',
         'Hunter Life' => 'Hunter Life',
         'Extra' => 'Extra',
-        'Assit' => 'Assit',
+        'Assist' => 'Assist',
         'Hiden' => 'Hiden',
         'Hunter Support' => 'Hunter Support',
         'Netcafe' => 'Netcafe',
